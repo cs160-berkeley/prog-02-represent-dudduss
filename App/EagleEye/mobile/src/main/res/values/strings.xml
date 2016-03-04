@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Eagle Eye</string>
+    <string name="action_settings">Settings</string>
+
+    <string-array name="olympiaNames">
+        <item> Denny Heck </item>
+        <item> Patty Murray </item>
+        <item> Maria Cantwell </item>
+    </string-array>
+</resources>

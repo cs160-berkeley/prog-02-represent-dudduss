@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#e94949"
+        android:titleTextColor="#ffffff"
+        android:fontFamily="sans-serif-condensed"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+
+    <ImageView
+        android:layout_below="@+id/toolbar"
+        android:layout_width="150dp"
+        android:layout_height="200dp"
+        android:paddingTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/congressman_img"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/congressman_img"
+        android:paddingTop="5dp"
+        android:textColor="#0c7ff3"
+        android:layout_centerHorizontal="true"
+        android:textSize="18dp"
+        android:id="@+id/party"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/party"
+        android:paddingTop="5dp"
+        android:textSize="18dp"
+        android:textColor="#000000"
+        android:text="Term End Date: May 2017"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/termDate"/>
+
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="10dp"
+        android:paddingTop ="10dp"
+        android:layout_below="@id/termDate"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/separator"
+        android:id = "@+id/separator1"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/separator1"
+        android:paddingTop="25dp"
+        android:textColor="#000000"
+        android:text="Commitees"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/committesTitle"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/committesTitle"
+        android:paddingTop="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:textColor="#776f6f"
+        android:text="New Democratic Coalition • Congressional Military Family • Congressional Taiwanese Caucus • Northwest Energy Committee"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/comittees"/>
+
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="10dp"
+        android:paddingTop ="10dp"
+        android:layout_below="@id/comittees"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/separator"
+        android:id = "@+id/separator2"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/separator2"
+        android:paddingTop="5dp"
+        android:textColor="#000000"
+        android:text="Bills"
+        android:layout_centerHorizontal="true"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:id="@+id/billsTitle"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/billsTitle"
+        android:paddingTop="5dp"
+        android:textColor="#776f6f"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="H.R. 2270: Billy Frank Jr. Tell Your Story Act
+                      Introduced: May 12, 2015"
+        android:id="@+id/bills"/>
+
+
+
+
+
+
+
+</RelativeLayout>
