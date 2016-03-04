@@ -1,20 +1,24 @@
 # PROG 02: Represent!
 
-Briefly describe your app here.
+Eagle Eye allows users to find and learn about congressmen in any zipcode/district in the United States using both the watch and the phone. Users can also see the voting results in 2012 in any zipcode/district they want to. 
 
 ## Authors
 
-FirstName LastName ([your_email@berkeley.edu](mailto:your_email@berkeley.edu))
+Sampath Duddu ([duddus@berkeley.edu](mailto:duddus@berkeley.edu))
 
 ## Demo Video
 
-See [your demo video title here] (https://link_to_your_video)
+See [Eagle Eye] (https://youtu.be/QGOfx2k5Q-c)
 
 ## Screenshots
 
-<img src="screenshots/main.png" height="400" alt="Screenshot"/>
+<img src="screenshots/MainViewMobile" height="400" alt="Screenshot"/>
+<img src="screenshots/CongressionalViewMobile" height="400" alt="Screenshot"/>
+<img src="screenshots/DetailViewMobile" height="400" alt="Screenshot"/>
+<img src="screenshots/MainViewWatch" height="250" alt="Screenshot"/>
+<img src="screenshots/VoteViewWatch" height="250" alt="Screenshot"/>
 
 ## Acknowledgments
 
-* Hat tip to anyone who's code was used
-* Any other support
+Thank you Stack Overflow.
+Major props to Brandon Chinn for helping out.
