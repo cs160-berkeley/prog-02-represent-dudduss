@@ -20,6 +20,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -238,6 +239,30 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     public void onCompleted(Exception e, JsonObject result) {
                         // do stuff with the result or error
                         Log.d("Location Result", String.valueOf(result));
+
+                        JsonArray array = result.getAsJsonArray("results");
+
+                        for (int i = 0; i < array.size(); i++) {
+
+                            String name = array.get(i).getAsJsonObject().get("first_name").toString() + " " +
+                                            array.get(i).getAsJsonObject().get("last_name").toString();
+                            String party = array.get(i).getAsJsonObject().get("party").toString();
+
+                            String email = array.get(i).getAsJsonObject().get("oc_email").toString();
+                            String website = array.get(i).getAsJsonObject().get("website").toString();
+                            String id = array.get(i).getAsJsonObject().get("bioguide_id").toString();
+                            String twitterName = array.get(i).getAsJsonObject().get("twitter_id").toString();
+                            String endDate = array.get(i).getAsJsonObject().get("term_end").toString();
+
+                            Congressmen cg = new Congressmen(name, party, email, website, id, twitterName, endDate);
+
+                            congressmen.add(cg);
+                            Log.d("count", String.valueOf(congressmen.size()));
+
+                        }
+
+                        Log.d("count", String.valueOf(congressmen.size()));
+
 
 //                        getLatestTweet();
 
