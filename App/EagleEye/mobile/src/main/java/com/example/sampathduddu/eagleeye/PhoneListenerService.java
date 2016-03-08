@@ -4,22 +4,15 @@ package com.example.sampathduddu.eagleeye;
  * Created by sampathduddu on 3/1/16.
  */
 
-import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
 
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
 public class PhoneListenerService extends WearableListenerService {
 
@@ -52,9 +45,11 @@ public class PhoneListenerService extends WearableListenerService {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         //you need to add this flag since you're starting a new activity from a service
 
-        Congressmen congressman = new Congressmen(name, parties.get(index), "", "", "", image_resource.get(index));
+        Congressmen cg = new Congressmen("", "", "","", "","","");
 
-        intent.putExtra("selected_congressmen", (Serializable) congressman);
+       // Congressmen congressman = new Congressmen(name, parties.get(index), "", "", "", image_resource.get(index));
+
+        intent.putExtra("selected_congressmen", (Serializable) cg);
 //        intent.putExtra("name", name);
 //        intent.putExtra("image_src", image_resource.get(index));
 //        intent.putExtra("party", parties.get(index));

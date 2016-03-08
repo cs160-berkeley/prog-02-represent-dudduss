@@ -1,6 +1,5 @@
 package com.example.sampathduddu.eagleeye;
 
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -27,11 +26,15 @@ import com.koushikdutta.ion.Ion;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.AppSession;
 import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.GuestCallback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.models.Search;
+
+import java.util.ArrayList;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -47,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private TwitterApiClient twitterApiClient;
     private AppSession guestAppSession;
 
+    private ArrayList<Congressmen> congressmen = new ArrayList<Congressmen>();
+
 
 
     @Override
@@ -55,8 +60,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
 
-        authenticate();
-
+//        authenticate();
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -83,15 +87,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
                 if (actionId == EditorInfo.IME_ACTION_DONE || ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER))) {
+
                     String zip = zipcode.getText().toString();
-                    Intent myintent = new Intent(MainActivity.this, CongressionalActivity.class);
+                    getRepresentativesZipcode(zip);
 
-                    myintent.putExtra("zip", zip);
-                    startActivity(myintent);
-
-                    Intent sendIntent = new Intent(MainActivity.this, PhoneToWatchService.class);
-                    sendIntent.putExtra("zip", zip);
-                    startService(sendIntent);
+//                    String zip = zipcode.getText().toString();
+//                    Intent myintent = new Intent(MainActivity.this, CongressionalActivity.class);
+//
+//                    myintent.putExtra("zip", zip);
+//                    startActivity(myintent);
+//
+//                    Intent sendIntent = new Intent(MainActivity.this, PhoneToWatchService.class);
+//                    sendIntent.putExtra("zip", zip);
+//                    startService(sendIntent);
 
                     return true;
                 }
@@ -108,7 +116,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 Log.d("Twitter", "twitter success");
                 guestAppSession = result.data;
                 twitterApiClient = TwitterCore.getInstance().getApiClient(guestAppSession);
-                getLatestTweet();
+                twitterApiClient.getSearchService().tweets("#fabric", null, null, null, null, 50, null, null, null, true, new GuestCallback<>(new Callback<Search>() {
+                    @Override
+                    public void success(Result<Search> result) {
+                        // use result tweets
+                        Log.d("something", "something else");
+                        getLatestTweet();
+                    }
+
+                    @Override
+                    public void failure(TwitterException exception) {
+                        // handle exceptions
+                    }
+                }));
+//                getLatestTweet();
             }
 
             @Override
@@ -131,36 +152,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         double longitude = location.getLongitude();
 
         // Creating a LatLng object for the current location
-        getRepresentatives(latitude, longitude);
-
-//
-//        // Setting latitude and longitude in the TextView tv_location
-//        tvLocation.setText("Latitude:" +  latitude  + ", Longitude:"+ longitude );
-
-    }
+        getRepresentativesCoordinates(latitude, longitude);
 
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     public void onClickCongressional(View view) {
@@ -202,11 +196,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
-    public void getRepresentatives(double lat, double lon) {
+    public void getRepresentativesZipcode(String zipcode) {
 
-//        Context a = new MockContext();
+        String url = "http://congress.api.sunlightfoundation.com/legislators/locate?zip=" + zipcode +"&apikey=d0bc1683ec03472c9cf0dc4b683b2f0d";
 
-        String url = "http://congress.api.sunlightfoundation.com/legislators/locate?zip=98502&apikey=d0bc1683ec03472c9cf0dc4b683b2f0d";
+       // String url = "http://congress.api.sunlightfoundation.com/legislators/locate?latitude=42.96&longitude=-108.09&apikey=d0bc1683ec03472c9cf0dc4b683b2f0d";
         Ion.with(getBaseContext())
                 .load(url)
                 .asJsonObject()
@@ -214,9 +208,38 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     @Override
                     public void onCompleted(Exception e, JsonObject result) {
                         // do stuff with the result or error
-                        Log.d("sfsdaf", String.valueOf(result));
+                        Log.d("Zipcode Result", String.valueOf(result));
 
-                        getLatestTweet();
+//                        getLatestTweet();
+
+//                        Intent i = new Intent(MainActivity.this, CongressionalActivity.class);
+//                        i.putExtra("zip", "94720");
+//                        startActivity(i);
+                    }
+                });
+
+
+    }
+
+    public void getRepresentativesCoordinates(double lat, double lon) {
+
+//        Context a = new MockContext();
+
+        String url = "http://congress.api.sunlightfoundation.com/legislators/locate?latitude=" +
+                Double.toString(lat) +"&longitude="+ Double.toString(lon) + "&apikey=d0bc1683ec03472c9cf0dc4b683b2f0d";
+
+        Log.d("url", url);
+
+        Ion.with(getBaseContext())
+                .load(url)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        // do stuff with the result or error
+                        Log.d("Location Result", String.valueOf(result));
+
+//                        getLatestTweet();
 
 //                        Intent i = new Intent(MainActivity.this, CongressionalActivity.class);
 //                        i.putExtra("zip", "94720");
@@ -226,6 +249,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     public void getLatestTweet() {
+
+
 
         String url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=SenatorBoxer&count=1";
         Ion.with(getBaseContext())
@@ -244,6 +269,27 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
 
 

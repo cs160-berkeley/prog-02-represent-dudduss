@@ -1,32 +1,18 @@
 package com.example.sampathduddu.eagleeye;
 
-import android.graphics.Color;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
-import android.support.v4.app.NavUtils;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.util.Log;
-import android.os.Parcelable;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * Created by sampathduddu on 2/29/16.
@@ -43,7 +29,7 @@ public class CongressionalActivity extends AppCompatActivity implements OnItemCl
     private String[] emails;
     private String[] websites;
 
-
+    private ArrayList<Congressmen> congressmen = new ArrayList<Congressmen>();
 
     Congressmen selected;
 
@@ -80,9 +66,8 @@ public class CongressionalActivity extends AppCompatActivity implements OnItemCl
 
 
         for (int i = 0; i < names.length; i++) {
-            Congressmen obj = new Congressmen(names[i], parties[i], emails[i], websites[i], tweets[i], img_resource[i]);
 
-            adapter.add(obj);
+            adapter.add(congressmen.get(i));
         }
 
         congressList.setOnItemClickListener(this);
@@ -109,7 +94,8 @@ public class CongressionalActivity extends AppCompatActivity implements OnItemCl
 //        selected = obj;
 
         int index = arg2;
-        selected = new Congressmen(names[index], parties[index], emails[index], websites[index], tweets[index], img_resource[index]);
+        selected = congressmen.get(index);
+      //  selected = new Congressmen(names[index], parties[index], emails[index], websites[index], tweets[index], img_resource[index]);
 
 
         Log.d("name", selected.name);
