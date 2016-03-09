@@ -1,5 +1,6 @@
 package com.example.sampathduddu.eagleeye;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -21,6 +22,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -35,6 +37,7 @@ import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.Search;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import io.fabric.sdk.android.Fabric;
@@ -52,6 +55,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private AppSession guestAppSession;
 
     private ArrayList<Congressmen> congressmen = new ArrayList<Congressmen>();
+
+    private double currLatitude;
+    private double currLongitude;
 
 
 
@@ -152,9 +158,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // Getting longitude of the current location
         double longitude = location.getLongitude();
 
-        // Creating a LatLng object for the current location
-        getRepresentativesCoordinates(latitude, longitude);
+        currLatitude = location.getLatitude();
+        currLongitude = location.getLongitude();
 
+//        // Creating a LatLng object for the current location
+//        getRepresentativesCoordinates(latitude, longitude);
+
+//        return;
 
     }
 
@@ -162,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         if (view.getId() == R.id.buttonGetLocation) {
 
-//
+
             // Getting LocationManager object from System Service LOCATION_SERVICE
             LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -179,12 +189,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 Location location = locationManager.getLastKnownLocation(provider);
 
                 if(location!=null){
+                    //Sets global vars lat and lon
                     onLocationChanged(location);
                 }
 
-                locationManager.requestLocationUpdates(provider, 20000, 0, this);
-            }
+                locationManager.requestLocationUpdates(provider, 200000, 0, this);
 
+            }
+            //Populates Representative Arrays
+            getRepresentativesCoordinates(currLatitude, currLongitude);
 
 //            Intent i = new Intent(MainActivity.this, CongressionalActivity.class);
 //            i.putExtra("zip", "94720");
@@ -223,9 +236,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     public void getRepresentativesCoordinates(double lat, double lon) {
-
-//        Context a = new MockContext();
-
         String url = "http://congress.api.sunlightfoundation.com/legislators/locate?latitude=" +
                 Double.toString(lat) +"&longitude="+ Double.toString(lon) + "&apikey=d0bc1683ec03472c9cf0dc4b683b2f0d";
 
@@ -247,22 +257,139 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                             String name = array.get(i).getAsJsonObject().get("first_name").toString() + " " +
                                             array.get(i).getAsJsonObject().get("last_name").toString();
                             String party = array.get(i).getAsJsonObject().get("party").toString();
-
                             String email = array.get(i).getAsJsonObject().get("oc_email").toString();
                             String website = array.get(i).getAsJsonObject().get("website").toString();
                             String id = array.get(i).getAsJsonObject().get("bioguide_id").toString();
                             String twitterName = array.get(i).getAsJsonObject().get("twitter_id").toString();
                             String endDate = array.get(i).getAsJsonObject().get("term_end").toString();
+                            String occupation = array.get(i).getAsJsonObject().get("chamber").toString();
 
-                            Congressmen cg = new Congressmen(name, party, email, website, id, twitterName, endDate);
+                            name = name.replaceAll("\"", "");
+                            party = party.replaceAll("\"", "");
+                            email = email.replaceAll("\"", "");
+                            website = website.replaceAll("\"", "");
+                            twitterName = twitterName.replaceAll("\"", "");
+                            endDate = endDate.replaceAll("\"", "");
+                            occupation = occupation.replaceAll("\"", "");
+
+                            Congressmen cg = new Congressmen(name, party, email, website, id,
+                                    twitterName, endDate, occupation);
 
                             congressmen.add(cg);
-                            Log.d("count", String.valueOf(congressmen.size()));
+//                            Log.d("count", String.valueOf(congressmen.size()));
+
+                        }
+//                        Log.d("count", String.valueOf(congressmen.size()));
+                        setCongressmenCommittees(0);
+
+                    }
+                });
+    }
+
+    public void setCongressmenCommittees(final int index) {
+
+        if (index == congressmen.size()) {
+//            Log.d("count", String.valueOf(congressmen.size()));
+//            Log.d("committees", String.valueOf(congressmen.get(0).committees));
+//            Log.d("committees", String.valueOf(congressmen.get(1).committees));
+//            Log.d("committees", String.valueOf(congressmen.get(2).committees));
+//            return;
+
+            setCongressmenBills(0);
+            return;
+        }
+
+        String bio_id =  congressmen.get(index).bio_id;
+        String url = "http://congress.api.sunlightfoundation.com/committees?member_ids=" + bio_id+
+                "&apikey=d0bc1683ec03472c9cf0dc4b683b2f0d";
+
+        Ion.with(getBaseContext())
+                .load(url)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        // do stuff with the result or error
+                        JsonArray array = result.getAsJsonArray("results");
+
+                        congressmen.get(index).committees = new ArrayList<String>();
+                        for (int i = 0; i < array.size(); i++) {
+
+                            if (i == 5) {
+                                break;
+                            }
+                            String committeeName = array.get(i).getAsJsonObject().get("name").toString();
+
+                            committeeName = committeeName.replaceAll("\"", "");
+
+                            congressmen.get(index).committees.add(committeeName);
 
                         }
 
-                        Log.d("count", String.valueOf(congressmen.size()));
 
+                        int copy = index;
+                        copy++;
+                        setCongressmenCommittees(copy);
+
+                    }
+                });
+
+    }
+
+    public void setCongressmenBills(final int index) {
+
+        if (index == congressmen.size()) {
+//            Log.d("count", String.valueOf(congressmen.size()));
+//            Log.d("bills", String.valueOf(congressmen.get(0).bills));
+//            Log.d("bills", String.valueOf(congressmen.get(1).bills));
+//            Log.d("bills", String.valueOf(congressmen.get(2).bills));
+            goToCongressional();
+            return;
+
+        }
+
+        String bio_id =  congressmen.get(index).bio_id;
+        String url = "http://congress.api.sunlightfoundation.com/bills?sponsor_id=" + bio_id+
+                "&apikey=d0bc1683ec03472c9cf0dc4b683b2f0d";
+
+        Ion.with(getBaseContext())
+                .load(url)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        // do stuff with the result or error
+
+                        JsonArray array = result.getAsJsonArray("results");
+
+                        congressmen.get(index).bills = new ArrayList<String>();
+                        for (int i = 0; i < array.size(); i++) {
+
+                            if (congressmen.get(index).bills.size() == 5) {
+                                break;
+                            }
+
+                            JsonElement elem = array.get(i).getAsJsonObject().get("short_title");
+
+                            if (!elem.toString().equals("null")) {
+                                String bill = elem.toString();
+
+                                bill = bill.replaceAll("\"", "");
+
+                                if (bill.toCharArray().length > 40) {
+                                    bill.substring(0, 40);
+                                    bill += "...";
+                                }
+
+                                congressmen.get(index).bills.add(bill);
+                            }
+
+                        }
+
+
+                        int copy = index;
+                        copy++;
+                        setCongressmenBills(copy);
 
 //                        getLatestTweet();
 
@@ -271,6 +398,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 //                        startActivity(i);
                     }
                 });
+
+    }
+
+    public void goToCongressional() {
+
+        Intent i = new Intent(MainActivity.this, CongressionalActivity.class);
+        i.putExtra("congressmen", (Serializable) congressmen);
+//        i.putExtra("zip", "94720");
+        startActivity(i);
+
     }
 
     public void getLatestTweet() {

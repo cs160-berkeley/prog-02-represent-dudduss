@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="match_parent">
@@ -29,7 +34,7 @@
         android:paddingTop="5dp"
         android:textColor="#0c7ff3"
         android:layout_centerHorizontal="true"
-        android:textSize="18dp"
+        android:textSize="20dp"
         android:id="@+id/party"/>
 
     <TextView
@@ -57,7 +62,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/separator1"
-        android:paddingTop="25dp"
+        android:paddingTop="15dp"
         android:textColor="#000000"
         android:text="Commitees"
         android:textSize="18dp"
@@ -91,7 +96,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/separator2"
-        android:paddingTop="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
         android:textColor="#000000"
         android:text="Bills"
         android:layout_centerHorizontal="true"
@@ -105,16 +111,15 @@
         android:layout_below="@id/billsTitle"
         android:paddingTop="5dp"
         android:textColor="#776f6f"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="10dp"
+        android:layout_centerHorizontal="true"
         android:text="H.R. 2270: Billy Frank Jr. Tell Your Story Act
                       Introduced: May 12, 2015"
+
         android:id="@+id/bills"/>
 
 
-
-
-
-
-
 </RelativeLayout>
+</ScrollView>

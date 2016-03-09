@@ -16,6 +16,7 @@ public class Congressmen implements Serializable {
     public String bio_id;
     public String twitterName;
     public String endDate;
+    public String occupation;
 
     //From other SunLife API calls
     public ArrayList<String> committees;
@@ -28,7 +29,7 @@ public class Congressmen implements Serializable {
 
 
     public Congressmen(String name, String party, String email, String website, String bio_id,
-                       String twitterName, String endDate) {
+                       String twitterName, String endDate, String occupation) {
 
         this.name = name;
         this.party = party;
@@ -37,7 +38,10 @@ public class Congressmen implements Serializable {
         this.bio_id = bio_id;
         this.twitterName = twitterName;
         this.endDate = endDate;
-        this.image_resource = R.drawable.heckdenny;
+        this.image_resource = R.drawable.barbaralee;
+        this.tweet = "Murray continues fighting to end the VA’s outdated ban on IVF for veterans " +
+                "injured during service. More: http://nyti.ms/1RzwET6";
+        this.occupation = occupation;
 
     }
 

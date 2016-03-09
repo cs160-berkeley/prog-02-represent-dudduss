@@ -48,10 +48,12 @@ public class CongressionalActivity extends AppCompatActivity implements OnItemCl
         toolbar.setTitle("  Congress Members");
         toolbar.setTitleTextColor(0xFFFFFFFF);
 
-        Intent getZipcode = getIntent();
-        zipcode = getZipcode.getStringExtra("zip");
+        Intent getCongressmen = getIntent();
+//        zipcode = getZipcode.getStringExtra("zip");
+        congressmen = (ArrayList<Congressmen>) getCongressmen.getSerializableExtra("congressmen");
 
-        setData();
+
+//        setData();
 //        toolbar.setLogo("eagle");
 
         setSupportActionBar(toolbar);
@@ -63,9 +65,7 @@ public class CongressionalActivity extends AppCompatActivity implements OnItemCl
 
         congressList.setAdapter(adapter);
 
-
-
-        for (int i = 0; i < names.length; i++) {
+        for (int i = 0; i < congressmen.size(); i++) {
 
             adapter.add(congressmen.get(i));
         }

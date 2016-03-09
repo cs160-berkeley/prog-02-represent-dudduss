@@ -45,7 +45,7 @@ public class PhoneListenerService extends WearableListenerService {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         //you need to add this flag since you're starting a new activity from a service
 
-        Congressmen cg = new Congressmen("", "", "","", "","","");
+        Congressmen cg = new Congressmen("", "", "","", "","","","");
 
        // Congressmen congressman = new Congressmen(name, parties.get(index), "", "", "", image_resource.get(index));
 

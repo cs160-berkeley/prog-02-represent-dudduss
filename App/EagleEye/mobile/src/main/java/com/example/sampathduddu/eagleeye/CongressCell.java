@@ -1,14 +1,13 @@
 package com.example.sampathduddu.eagleeye;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
-import android.view.ViewGroup;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 import android.widget.ImageView;
-
-import org.w3c.dom.Text;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -84,8 +83,21 @@ public class CongressCell extends ArrayAdapter {
         Congressmen cg = (Congressmen) getItem(position);
         holder.img.setImageResource(cg.image_resource);
 
-        holder.name.setText(cg.name);
-        holder.party.setText(cg.party);
+        if (cg.occupation.equals("senate")) {
+            holder.name.setText("Senator " + cg.name);
+        } else {
+            holder.name.setText("Rep. " + cg.name);
+        }
+
+        if (cg.party.equals("D")) {
+            holder.party.setTextColor(Color.parseColor("#0c7ff3"));
+            holder.party.setText("Democrat");
+        } else {
+            holder.party.setTextColor(Color.parseColor("#e94949"));
+            holder.party.setText("Republican");
+        }
+
+
         holder.tweet.setText("\"" + cg.tweet + "\"");
 
         holder.email.setText("Email: " + cg.email);
