@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.HashMap;
+
 
 /**
  * Created by sampathduddu on 2/29/16.
@@ -39,7 +41,8 @@ public class DetailActivity extends AppCompatActivity {
         congressImg.setImageResource(cg.image_resource);
 
         TextView endTerm = (TextView) findViewById(R.id.termDate);
-        endTerm.setText("Term End Date: " + cg.endDate);
+        String dateDisplay = dateDisplay(cg.endDate);
+        endTerm.setText("Term End Date: " + dateDisplay);
 
         TextView party = (TextView) findViewById(R.id.party);
 
@@ -78,6 +81,32 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         billsText.setText(allBills);
+
+    }
+
+    public String dateDisplay(String date) {
+
+        String year = date.substring(0,4);
+
+        HashMap<String, String> months = new HashMap<String, String>();
+        months.put("01", "January");
+        months.put("02", "February");
+        months.put("03", "March");
+        months.put("04", "April");
+        months.put("05", "May");
+        months.put("06", "June");
+        months.put("07", "July");
+        months.put("08", "August");
+        months.put("09", "September");
+        months.put("10", "October");
+        months.put("11", "November");
+        months.put("12", "December");
+
+        return months.get(date.substring(5,7)) + " " + year;
+
+
+
+
 
     }
 

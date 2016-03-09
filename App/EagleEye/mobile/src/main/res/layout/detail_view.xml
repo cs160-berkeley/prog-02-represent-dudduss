@@ -78,8 +78,7 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:textColor="#776f6f"
-        android:text="New Democratic Coalition • Congressional Military Family • Congressional Taiwanese Caucus • Northwest Energy Committee"
-        android:layout_centerHorizontal="true"
+
         android:id="@+id/comittees"/>
 
     <ImageView
@@ -114,7 +113,7 @@
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:paddingBottom="10dp"
-        android:layout_centerHorizontal="true"
+
         android:text="H.R. 2270: Billy Frank Jr. Tell Your Story Act
                       Introduced: May 12, 2015"
 

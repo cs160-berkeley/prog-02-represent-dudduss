@@ -93,7 +93,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-                if (actionId == EditorInfo.IME_ACTION_DONE || ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER))) {
+                if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_GO ||
+                        actionId == EditorInfo.IME_ACTION_NEXT || ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER))) {
 
                     String zip = zipcode.getText().toString();
                     getRepresentativesZipcode(zip);
@@ -212,6 +213,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     public void getRepresentativesZipcode(String zipcode) {
 
+        congressmen.clear();
+
         String url = "http://congress.api.sunlightfoundation.com/legislators/locate?zip=" + zipcode +"&apikey=d0bc1683ec03472c9cf0dc4b683b2f0d";
 
        // String url = "http://congress.api.sunlightfoundation.com/legislators/locate?latitude=42.96&longitude=-108.09&apikey=d0bc1683ec03472c9cf0dc4b683b2f0d";
@@ -222,20 +225,48 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     @Override
                     public void onCompleted(Exception e, JsonObject result) {
                         // do stuff with the result or error
-                        Log.d("Zipcode Result", String.valueOf(result));
+//                        Log.d("Zipcode Result", String.valueOf(result));
 
-//                        getLatestTweet();
+                        JsonArray array = result.getAsJsonArray("results");
 
-//                        Intent i = new Intent(MainActivity.this, CongressionalActivity.class);
-//                        i.putExtra("zip", "94720");
-//                        startActivity(i);
+                        for (int i = 0; i < array.size(); i++) {
+
+                            String name = array.get(i).getAsJsonObject().get("first_name").toString() + " " +
+                                    array.get(i).getAsJsonObject().get("last_name").toString();
+                            String party = array.get(i).getAsJsonObject().get("party").toString();
+                            String email = array.get(i).getAsJsonObject().get("oc_email").toString();
+                            String website = array.get(i).getAsJsonObject().get("website").toString();
+                            String id = array.get(i).getAsJsonObject().get("bioguide_id").toString();
+                            String twitterName = array.get(i).getAsJsonObject().get("twitter_id").toString();
+                            String endDate = array.get(i).getAsJsonObject().get("term_end").toString();
+                            String occupation = array.get(i).getAsJsonObject().get("chamber").toString();
+
+                            name = name.replaceAll("\"", "");
+                            party = party.replaceAll("\"", "");
+                            email = email.replaceAll("\"", "");
+                            website = website.replaceAll("\"", "");
+                            twitterName = twitterName.replaceAll("\"", "");
+                            endDate = endDate.replaceAll("\"", "");
+                            occupation = occupation.replaceAll("\"", "");
+
+                            Congressmen cg = new Congressmen(name, party, email, website, id,
+                                    twitterName, endDate, occupation);
+
+                            congressmen.add(cg);
+//                            Log.d("count", String.valueOf(congressmen.size()));
+
+                        }
+//                        Log.d("count", String.valueOf(congressmen.size()));
+                        setCongressmenCommittees(0);
+
                     }
                 });
-
 
     }
 
     public void getRepresentativesCoordinates(double lat, double lon) {
+
+        congressmen.clear();
         String url = "http://congress.api.sunlightfoundation.com/legislators/locate?latitude=" +
                 Double.toString(lat) +"&longitude="+ Double.toString(lon) + "&apikey=d0bc1683ec03472c9cf0dc4b683b2f0d";
 
@@ -248,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     @Override
                     public void onCompleted(Exception e, JsonObject result) {
                         // do stuff with the result or error
-                        Log.d("Location Result", String.valueOf(result));
+//                        Log.d("Location Result", String.valueOf(result));
 
                         JsonArray array = result.getAsJsonArray("results");
 
