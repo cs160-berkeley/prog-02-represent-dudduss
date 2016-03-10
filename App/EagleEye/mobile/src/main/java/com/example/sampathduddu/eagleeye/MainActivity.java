@@ -36,9 +36,12 @@ import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.Search;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.StatusesService;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -60,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private double currLongitude;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,13 +71,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
 //        authenticate();
 
+        //Seting layout basics
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         toolbar.setTitle("  Eagle Eye");
         toolbar.setLogo(R.drawable.eaglelarge);
-//        toolbar.setLogo("eagle");
-
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -99,21 +100,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     String zip = zipcode.getText().toString();
                     getRepresentativesZipcode(zip);
 
-//                    String zip = zipcode.getText().toString();
-//                    Intent myintent = new Intent(MainActivity.this, CongressionalActivity.class);
-//
-//                    myintent.putExtra("zip", zip);
-//                    startActivity(myintent);
-//
-//                    Intent sendIntent = new Intent(MainActivity.this, PhoneToWatchService.class);
-//                    sendIntent.putExtra("zip", zip);
-//                    startService(sendIntent);
-
                     return true;
                 }
                 return false;
             }
         });
+
+        getLatestTweet();
 
     }
 
@@ -443,23 +436,56 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     public void getLatestTweet() {
 
+        TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+        // Can also use Twitter directly: Twitter.getApiClient()
+        StatusesService statusesService = twitterApiClient.getStatusesService();
 
 
-        String url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=SenatorBoxer&count=1";
-        Ion.with(getBaseContext())
-                .load(url)
-                .asJsonObject()
-                .setCallback(new FutureCallback<JsonObject>() {
-                    @Override
-                    public void onCompleted(Exception e, JsonObject result) {
-                        // do stuff with the result or error
-                        Log.d("Tweet", String.valueOf(result));
-//                        getLatestTweet();
-//                        Intent i = new Intent(MainActivity.this, CongressionalActivity.class);
-//                        i.putExtra("zip", "94720");
-//                        startActivity(i);
-                    }
-                });
+        statusesService.userTimeline(null,"SenatorBoxer", 1, null, null,
+                null, null,null,null,new Callback<List<Tweet>>() {
+            @Override
+            public void success(Result<List<Tweet>> result) {
+
+                Log.d("result", String.valueOf(result));
+                
+                //Do something with result, which provides a Tweet inside of result.data
+            }
+
+            public void failure(TwitterException exception) {
+                Log.d("failure", "failure");
+                //Do something on failure
+            }
+        });
+
+//        statusesService.show(524971209851543553L, null, null, null, new Callback<Tweet>() {
+//            @Override
+//            public void success(Result<Tweet> result) {
+//                //Do something with result, which provides a Tweet inside of result.data
+//            }
+//
+//            public void failure(TwitterException exception) {
+//                //Do something on failure
+//            }
+//        });
+
+//        TwitterSession session = Twitter.getSessionManager().getActiveSession();
+//        TwitterAuthToken authToken = session.getAuthToken();
+//
+//        String url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=SenatorBoxer&count=1";
+//        Ion.with(getBaseContext())
+//                .load(url)
+//                .asJsonObject()
+//                .setCallback(new FutureCallback<JsonObject>() {
+//                    @Override
+//                    public void onCompleted(Exception e, JsonObject result) {
+//                        // do stuff with the result or error
+//                        Log.d("Tweet", String.valueOf(result));
+////                        getLatestTweet();
+////                        Intent i = new Intent(MainActivity.this, CongressionalActivity.class);
+////                        i.putExtra("zip", "94720");
+////                        startActivity(i);
+//                    }
+//                });
     }
 
     @Override
