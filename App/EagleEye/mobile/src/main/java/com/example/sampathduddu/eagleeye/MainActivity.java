@@ -37,6 +37,11 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.services.StatusesService;
 
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +68,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private String selectedCity;
     private String selectedCounty;
     private String selectedState;
+    private String selectedStateAbbreviation;
+
+    private double obamaPercentage;
+    private double romneyPercentage;
 
 
     @Override
@@ -222,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             //geocoderURL += "address=" + zipcode;
         }
 
-        Log.d("url", geocoderURL);
+        //Log.d("url", geocoderURL);
         Ion.with(getBaseContext())
                 .load(geocoderURL)
                 .asJsonObject()
@@ -240,13 +249,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                             type = type.replaceAll("\"", "");
                             if (type.equals("locality")) {
                                 selectedCity = component.getAsJsonObject().get("long_name").toString();
+                                selectedCity = selectedCity.replaceAll("\"", "");
+
                             } else if (type.equals("administrative_area_level_1")) {
                                 selectedState = component.getAsJsonObject().get("long_name").toString();
+                                selectedStateAbbreviation = component.getAsJsonObject().get("short_name").toString();
+
+                                selectedState = selectedState.replaceAll("\"", "");
+                                selectedStateAbbreviation = selectedStateAbbreviation.replaceAll("\"", "");
 
                             } else if (type.equals("administrative_area_level_2")) {
                                 selectedCounty = component.getAsJsonObject().get("long_name").toString();
-                            }
+                                selectedCounty = selectedCounty.replaceAll("\"", "");
 
+                            }
                         }
 
                         getRepresentativesCoordinates(lat, lon);
@@ -349,7 +365,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         String url = "http://congress.api.sunlightfoundation.com/legislators/locate?latitude=" +
                 Double.toString(lat) +"&longitude="+ Double.toString(lon) + "&apikey=d0bc1683ec03472c9cf0dc4b683b2f0d";
 
-        Log.d("url", url);
+        //Log.d("url", url);
 
         Ion.with(getBaseContext())
                 .load(url)
@@ -361,7 +377,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                         Log.d("Location Result", String.valueOf(result));
 
                         JsonArray array = result.getAsJsonArray("results");
-
 
                         for (int i = 0; i < array.size(); i++) {
 
@@ -514,10 +529,63 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     public void goToCongressional() {
 
+        setVotingData();
+
+        //In Phone
         Intent i = new Intent(MainActivity.this, CongressionalActivity.class);
         i.putExtra("congressmen", (Serializable) congressmen);
-//        i.putExtra("zip", "94720");
         startActivity(i);
+
+        //In watch
+        Intent sendIntent = new Intent(MainActivity.this, PhoneToWatchService.class);
+        sendIntent.putExtra("congressmen", congressmen);
+        sendIntent.putExtra("obama", obamaPercentage);
+        sendIntent.putExtra("romney", romneyPercentage);
+        sendIntent.putExtra("state", selectedState);
+        sendIntent.putExtra("city", selectedCity);
+        sendIntent.putExtra("zip", "94720");
+        startService(sendIntent);
+
+
+    }
+
+    public void setVotingData() {
+
+//Get Data From Text Resource File Contains Json Data.
+        InputStream inputStream = getResources().openRawResource(R.raw.relection_results_2012);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        int ctr;
+        try {
+            ctr = inputStream.read();
+            while (ctr != -1) {
+                byteArrayOutputStream.write(ctr);
+                ctr = inputStream.read();
+            }
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+//        Log.v("Text Data", byteArrayOutputStream.toString());
+        try {
+            // Parse the data into jsonobject to get original data in form of json.
+            JSONObject jObject = new JSONObject(
+                    byteArrayOutputStream.toString());
+
+            String key = selectedCounty + ", " + selectedStateAbbreviation;
+
+            JSONObject voteResult = jObject.getJSONObject(key);
+
+            obamaPercentage = voteResult.getDouble("obama");
+            romneyPercentage = voteResult.getDouble("romney");
+            Log.d("ready", "ready");
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

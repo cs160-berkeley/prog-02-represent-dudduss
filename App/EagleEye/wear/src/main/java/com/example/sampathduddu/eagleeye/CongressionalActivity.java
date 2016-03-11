@@ -1,26 +1,18 @@
 package com.example.sampathduddu.eagleeye;
 
+import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
-import android.util.Log;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.support.wearable.view.WatchViewStub;
 import android.support.wearable.view.WearableListView;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.content.Context;
-import android.graphics.Color;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.sampathduddu.eagleeye.ShakeDetector.OnShakeListener;
 
@@ -40,6 +32,12 @@ public class CongressionalActivity extends WearableActivity {
     private int[] img_resource;
     private String[] parties;
 
+    private String city;
+    private String state;
+    private double obamaPercentage;
+    private double romneyPercentage;
+
+
     private WearableListView listView;
 
     int index = 0;
@@ -52,14 +50,34 @@ public class CongressionalActivity extends WearableActivity {
         setContentView(R.layout.round_congressmen);
 
 
+        Log.d("myTag", "got here 4");
+
         Button prev = (Button) findViewById(R.id.prev);
         prev.setEnabled(false);
 
-        Intent zip = getIntent();
-        zipcode = zip.getStringExtra("zip");
+        Intent info = getIntent();
+
+        names = info.getStringArrayExtra("names");
+        parties = info.getStringArrayExtra("parties");
+        city = info.getStringExtra("city");
+        state = info.getStringExtra("state");
+
+//        Log.d("cityFromPhone", city);
+//        Log.d("stateFromPhone", state);
+
+        obamaPercentage = info.getDoubleExtra("obama", 50);
+        romneyPercentage = info.getDoubleExtra("romney", 49);
+
+        Log.d("obamaFromPhone", String.valueOf(obamaPercentage));
+        Log.d("romneyFromPhone", String.valueOf(romneyPercentage));
+
+        img_resource = new int[]{R.drawable.heckdenny, R.drawable.murray, R.drawable.cantwell};
+
+//        zipcode = zip.getStringExtra("zip");
 //
 //        zipcode = "98502";
-        setData();
+//        setData();
+        setView();
 
 
 
@@ -133,6 +151,11 @@ public class CongressionalActivity extends WearableActivity {
 
     public void setView() {
 
+//        names = new String[]{"Rep. Denny Heck", "Senator Patty Murray", "Senator Maria Cantwell"};
+//
+//        img_resource = new int[]{R.drawable.heckdenny, R.drawable.murray, R.drawable.cantwell};
+//        parties = new String[]{"Democrat", "Democrat", "Democrat"};
+
         ImageView img = (ImageView) findViewById(R.id.congressImage);
         img.setImageResource(img_resource[index]);
 
@@ -142,9 +165,11 @@ public class CongressionalActivity extends WearableActivity {
         TextView party = (TextView) findViewById(R.id.party);
         party.setText(parties[index]);
 
-        if (parties[index].equals("Democrat")) {
+        if (parties[index].equals("D")) {
+            party.setText("Democrat");
             party.setTextColor(Color.parseColor("#0c7ff3"));
         } else {
+            party.setText("Republican");
             party.setTextColor(Color.parseColor("#e94949"));
         }
 
@@ -159,25 +184,39 @@ public class CongressionalActivity extends WearableActivity {
         Button prev = (Button) findViewById(R.id.prev);
         prev.setEnabled(true);
 
+        Button next = (Button) findViewById(R.id.next);
+
+        if (index == 2) {
+            next.setText("Vote");
+        }
+
         if (index == 3) {
             Intent toVote = new Intent(CongressionalActivity.this, VoteActivity.class);
 
-            if (zipcode.equals("98502")) {
-                toVote.putExtra("county", "Thurston");
-                toVote.putExtra("state", "WA");
-                toVote.putExtra("Obama", 58);
-                toVote.putExtra("Romney", 41);
-            } else if (zipcode.equals("94720")) {
-                toVote.putExtra("county", "Alameda");
-                toVote.putExtra("state", "CA");
-                toVote.putExtra("Obama", 56);
-                toVote.putExtra("Romney", 44);
-            } else {
-                toVote.putExtra("county", "Shelby");
-                toVote.putExtra("state", "AL");
-                toVote.putExtra("Obama", 41);
-                toVote.putExtra("Romney", 59);
-            }
+            toVote.putExtra("city", city);
+            toVote.putExtra("state", state);
+
+            Log.d("obamaToVote", String.valueOf(obamaPercentage));
+            Log.d("romneyToVote", String.valueOf(romneyPercentage));
+            toVote.putExtra("Obama", obamaPercentage);
+            toVote.putExtra("Romney", romneyPercentage);
+
+//            if (zipcode.equals("98502")) {
+//                toVote.putExtra("county", "Thurston");
+//                toVote.putExtra("state", "WA");
+//                toVote.putExtra("Obama", 58);
+//                toVote.putExtra("Romney", 41);
+//            } else if (zipcode.equals("94720")) {
+//                toVote.putExtra("county", "Alameda");
+//                toVote.putExtra("state", "CA");
+//                toVote.putExtra("Obama", 56);
+//                toVote.putExtra("Romney", 44);
+//            } else {
+//                toVote.putExtra("county", "Shelby");
+//                toVote.putExtra("state", "AL");
+//                toVote.putExtra("Obama", 41);
+//                toVote.putExtra("Romney", 59);
+//            }
 
             startActivity(toVote);
             index = 2;

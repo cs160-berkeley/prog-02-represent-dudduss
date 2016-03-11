@@ -3,15 +3,24 @@ package com.example.sampathduddu.eagleeye;
 import android.content.Intent;
 import android.util.Log;
 
+import com.google.android.gms.wearable.DataEvent;
+import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  * Created by sampathduddu on 3/1/16.
  */
 public class WatchListenerService extends WearableListenerService {
+
+    private String[] names;
+    private String[] parties;
+    private String city;
+    private String state;
+    private double obama;
+    private double romney;
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
@@ -25,6 +34,58 @@ public class WatchListenerService extends WearableListenerService {
         intent.putExtra("zip", zip);
         Log.d("T", "about to start watch MainActivity with CAT_NAME: Fred");
         startActivity(intent);
-
     }
+
+
+    private static final String WEARABLE_DATA_PATH = "/wearable_data";
+
+    @Override
+    public void onDataChanged(DataEventBuffer dataEvents) {
+
+        Log.d("myTag", "got here 1");
+
+        DataMap dataMap;
+        for (DataEvent event : dataEvents) {
+            // Check the data type
+            Log.d("myTag", "got here 2");
+            if (event.getType() == DataEvent.TYPE_CHANGED) {
+                // Check the data path
+                String path = event.getDataItem().getUri().getPath();
+                if (path.equals(WEARABLE_DATA_PATH)) {}
+
+                dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+
+//                dataMap.putString("city", selectedCity);
+//                dataMap.putString("state", selectedCity);
+//                dataMap.putDouble("obama", obamaPercentage);
+//                dataMap.putDouble("romney", romneyPercentage);
+
+                names = dataMap.getStringArray("names");
+                parties = dataMap.getStringArray("parties");
+                city = dataMap.getString("city");
+                state = dataMap.get("state");
+                obama = dataMap.getDouble("obama");
+                romney = dataMap.getDouble("romney");
+                Log.d("romney", String.valueOf(romney));
+
+
+            }
+        }
+
+        Log.d("myTag", "got here 3");
+
+        Intent intent = new Intent(this, CongressionalActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        intent.putExtra("names", names);
+        intent.putExtra("parties", parties);
+        intent.putExtra("city", city);
+        intent.putExtra("state", state);
+        intent.putExtra("obama", obama);
+        intent.putExtra("romney", romney);
+        startActivity(intent);
+
+        Log.d("myTag", "got here 4");
+    }
+
 }
