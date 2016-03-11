@@ -5,9 +5,12 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.koushikdutta.ion.Ion;
 
 import java.util.HashMap;
 
@@ -37,8 +40,32 @@ public class DetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
+        //For loading high quality image into image view
         ImageView congressImg = (ImageView) findViewById(R.id.congressman_img);
-        congressImg.setImageResource(cg.image_resource);
+
+        String url = cg.image_url;
+
+        if (url.substring(url.length() - 3, url.length()).equals("png")) {
+            url = url.substring(0, url.length() - 11);
+            url += ".png";
+
+        } else if (url.substring(url.length() - 3, url.length()).equals("jpg")) {
+            url = url.substring(0, url.length() - 11);
+            url += ".jpg";
+
+        } else if (url.substring(url.length() - 4, url.length()).equals("jpeg")) {
+            url = url.substring(0, url.length() - 12);
+            url += ".jpeg";
+        } else {
+            Log.d("break", "break");
+        }
+
+        Ion.with(congressImg)
+                .placeholder(R.drawable.placeholder_image)
+                .error(R.drawable.no_image)
+                .load(url);
+
 
         TextView endTerm = (TextView) findViewById(R.id.termDate);
         String dateDisplay = dateDisplay(cg.endDate);

@@ -133,14 +133,6 @@ public class CongressCell extends ArrayAdapter {
 
 
 
-
-//        Log.d("url truncated", url);
-//
-//        url += ".png";
-//
-//        Log.d("urlafter", url);
-
-
         Ion.with(holder.img)
                 .placeholder(R.drawable.placeholder_image)
                 .error(R.drawable.no_image)

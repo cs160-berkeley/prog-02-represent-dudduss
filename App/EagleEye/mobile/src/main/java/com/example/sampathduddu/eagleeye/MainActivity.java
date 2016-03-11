@@ -29,13 +29,11 @@ import com.koushikdutta.ion.Ion;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.AppSession;
 import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.GuestCallback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.models.Search;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.services.StatusesService;
 
@@ -61,6 +59,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     private double currLatitude;
     private double currLongitude;
+
+    private String selectedCity;
+    private String selectedCounty;
+    private String selectedState;
 
 
     @Override
@@ -98,8 +100,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                         actionId == EditorInfo.IME_ACTION_NEXT || ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER))) {
 
                     String zip = zipcode.getText().toString();
-                    getRepresentativesZipcode(zip);
 
+                    setLocaleDetails("zip", zip, 0.0, 0.0);
+                   // getRepresentativesZipcode(zip);
                     return true;
                 }
                 return false;
@@ -110,35 +113,35 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     }
 
-    public void authenticate() {
-        TwitterCore.getInstance().logInGuest(new Callback<AppSession>() {
-            @Override
-            public void success(Result<AppSession> result) {
-                Log.d("Twitter", "twitter success");
-                guestAppSession = result.data;
-                twitterApiClient = TwitterCore.getInstance().getApiClient(guestAppSession);
-                twitterApiClient.getSearchService().tweets("#fabric", null, null, null, null, 50, null, null, null, true, new GuestCallback<>(new Callback<Search>() {
-                    @Override
-                    public void success(Result<Search> result) {
-                        // use result tweets
-                        Log.d("something", "something else");
-                    }
-
-                    @Override
-                    public void failure(TwitterException exception) {
-                        // handle exceptions
-                    }
-                }));
-//                getLatestTweet();
-            }
-
-            @Override
-            public void failure(TwitterException e) {
-
-            }
-        });
-
-    }
+//    public void authenticate() {
+//        TwitterCore.getInstance().logInGuest(new Callback<AppSession>() {
+//            @Override
+//            public void success(Result<AppSession> result) {
+//                Log.d("Twitter", "twitter success");
+//                guestAppSession = result.data;
+//                twitterApiClient = TwitterCore.getInstance().getApiClient(guestAppSession);
+//                twitterApiClient.getSearchService().tweets("#fabric", null, null, null, null, 50, null, null, null, true, new GuestCallback<>(new Callback<Search>() {
+//                    @Override
+//                    public void success(Result<Search> result) {
+//                        // use result tweets
+//                        Log.d("something", "something else");
+//                    }
+//
+//                    @Override
+//                    public void failure(TwitterException exception) {
+//                        // handle exceptions
+//                    }
+//                }));
+////                getLatestTweet();
+//            }
+//
+//            @Override
+//            public void failure(TwitterException e) {
+//
+//            }
+//        });
+//
+//    }
 
 
 
@@ -190,7 +193,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
             }
             //Populates Representative Arrays
-            getRepresentativesCoordinates(currLatitude, currLongitude);
+            setLocaleDetails("latlon", "", currLatitude, currLongitude);
+//            getRepresentativesCoordinates(currLatitude, currLongitude);
 
 //            Intent i = new Intent(MainActivity.this, CongressionalActivity.class);
 //            i.putExtra("zip", "94720");
@@ -201,6 +205,89 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 //            startService(sendIntent);
 
         }
+    }
+
+    public void setLocaleDetails(String inputType, String zipcode, final double lat, final double lon) {
+
+        String geocoderURL = "http://maps.googleapis.com/maps/api/geocode/json?&";
+
+        if (inputType.equals("latlon")) {
+
+            geocoderURL += "latlng=" + String.valueOf(lat) + "," +  String.valueOf(lon);
+
+        } else {
+
+            getLatLonForZip(zipcode);
+            return;
+            //geocoderURL += "address=" + zipcode;
+        }
+
+        Log.d("url", geocoderURL);
+        Ion.with(getBaseContext())
+                .load(geocoderURL)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        // do stuff with the result or error
+                        JsonArray resultsArray = result.getAsJsonArray("results");
+                        JsonArray addressArray = (JsonArray) resultsArray.get(0).getAsJsonObject().get("address_components");
+
+                        for (JsonElement component: addressArray) {
+
+                            String type = component.getAsJsonObject().get("types").getAsJsonArray().get(0).toString();
+
+                            type = type.replaceAll("\"", "");
+                            if (type.equals("locality")) {
+                                selectedCity = component.getAsJsonObject().get("long_name").toString();
+                            } else if (type.equals("administrative_area_level_1")) {
+                                selectedState = component.getAsJsonObject().get("long_name").toString();
+
+                            } else if (type.equals("administrative_area_level_2")) {
+                                selectedCounty = component.getAsJsonObject().get("long_name").toString();
+                            }
+
+                        }
+
+                        getRepresentativesCoordinates(lat, lon);
+                        return;
+
+                    }
+                });
+
+    }
+
+
+    public void getLatLonForZip(final String zipcode) {
+
+        String geocoderURL = "http://maps.googleapis.com/maps/api/geocode/json?&address=" + zipcode;
+
+        Ion.with(getBaseContext())
+                .load(geocoderURL)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        // do stuff with the result or error
+                        JsonArray resultsArray = result.getAsJsonArray("results");
+                        JsonElement k = resultsArray.get(0);
+                        JsonElement l = resultsArray.get(0).getAsJsonObject();
+
+                        JsonElement geometry = resultsArray.get(0).getAsJsonObject().get("geometry");
+                        JsonElement location = geometry.getAsJsonObject().get("location");
+
+
+                        double lat = location.getAsJsonObject().get("lat").getAsDouble();
+                        double lon = location.getAsJsonObject().get("lng").getAsDouble();
+
+                        setLocaleDetails("latlon", zipcode, lat, lon);
+                        return;
+
+                    }
+
+                });
+
+
     }
 
     public void getRepresentativesZipcode(String zipcode) {
@@ -474,35 +561,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
         });
 
-//        statusesService.show(524971209851543553L, null, null, null, new Callback<Tweet>() {
-//            @Override
-//            public void success(Result<Tweet> result) {
-//                //Do something with result, which provides a Tweet inside of result.data
-//            }
-//
-//            public void failure(TwitterException exception) {
-//                //Do something on failure
-//            }
-//        });
-
-//        TwitterSession session = Twitter.getSessionManager().getActiveSession();
-//        TwitterAuthToken authToken = session.getAuthToken();
-//
-//        String url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=SenatorBoxer&count=1";
-//        Ion.with(getBaseContext())
-//                .load(url)
-//                .asJsonObject()
-//                .setCallback(new FutureCallback<JsonObject>() {
-//                    @Override
-//                    public void onCompleted(Exception e, JsonObject result) {
-//                        // do stuff with the result or error
-//                        Log.d("Tweet", String.valueOf(result));
-////                        getLatestTweet();
-////                        Intent i = new Intent(MainActivity.this, CongressionalActivity.class);
-////                        i.putExtra("zip", "94720");
-////                        startActivity(i);
-//                    }
-//                });
     }
 
     @Override
@@ -526,7 +584,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         return super.onOptionsItemSelected(item);
     }
-
 
 
     @Override
