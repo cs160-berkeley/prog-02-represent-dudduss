@@ -2,12 +2,15 @@ package com.example.sampathduddu.eagleeye;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.koushikdutta.ion.Ion;
 
 import java.util.ArrayList;
 
@@ -72,6 +75,7 @@ public class CongressCell extends ArrayAdapter {
             holder.tweet = (TextView) row.findViewById(R.id.tweet);
             holder.twitterLogo = (ImageView) row.findViewById(R.id.twitter_logo);
 
+
             row.setTag(holder);
 
         } else {
@@ -81,7 +85,8 @@ public class CongressCell extends ArrayAdapter {
         }
 
         Congressmen cg = (Congressmen) getItem(position);
-        holder.img.setImageResource(cg.image_resource);
+
+//        holder.img.setImageResource(cg.image_resource);
 
         if (cg.occupation.equals("senate")) {
             holder.name.setText("Senator " + cg.name);
@@ -103,6 +108,43 @@ public class CongressCell extends ArrayAdapter {
         holder.email.setText("Email: " + cg.email);
         holder.website.setText("Website: " + cg.website);
         holder.twitterLogo.setImageResource(R.drawable.twitter_logo);
+
+//        ImageView imageView =
+
+        Log.d("url", cg.image_url);
+
+
+        String url = cg.image_url;
+
+        if (url.substring(url.length() - 3, url.length()).equals("png")) {
+            url = url.substring(0, url.length() - 11);
+            url += ".png";
+
+        } else if (url.substring(url.length() - 3, url.length()).equals("jpg")) {
+            url = url.substring(0, url.length() - 11);
+            url += ".jpg";
+
+        } else if (url.substring(url.length() - 4, url.length()).equals("jpeg")) {
+            url = url.substring(0, url.length() - 12);
+            url += ".jpeg";
+        } else {
+            Log.d("break", "break");
+        }
+
+
+
+
+//        Log.d("url truncated", url);
+//
+//        url += ".png";
+//
+//        Log.d("urlafter", url);
+
+
+        Ion.with(holder.img)
+                .placeholder(R.drawable.placeholder_image)
+                .error(R.drawable.no_image)
+                .load(url);
 
         return row;
     }

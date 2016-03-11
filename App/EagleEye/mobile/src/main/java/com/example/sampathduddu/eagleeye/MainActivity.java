@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
         });
 
-        getLatestTweet();
+//        getLatestTweet();
 
     }
 
@@ -122,7 +122,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     public void success(Result<Search> result) {
                         // use result tweets
                         Log.d("something", "something else");
-                        getLatestTweet();
                     }
 
                     @Override
@@ -272,9 +271,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     @Override
                     public void onCompleted(Exception e, JsonObject result) {
                         // do stuff with the result or error
-//                        Log.d("Location Result", String.valueOf(result));
+                        Log.d("Location Result", String.valueOf(result));
 
                         JsonArray array = result.getAsJsonArray("results");
+
 
                         for (int i = 0; i < array.size(); i++) {
 
@@ -367,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 //            Log.d("bills", String.valueOf(congressmen.get(0).bills));
 //            Log.d("bills", String.valueOf(congressmen.get(1).bills));
 //            Log.d("bills", String.valueOf(congressmen.get(2).bills));
-            goToCongressional();
+            getLatestTweet(0);
             return;
 
         }
@@ -434,20 +434,37 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     }
 
-    public void getLatestTweet() {
+    public void getLatestTweet(final int i) {
+
+        if (i == congressmen.size()) {
+            Log.d("tweet1", congressmen.get(0).tweet);
+            goToCongressional();
+            return;
+        }
+
+        final Congressmen current = congressmen.get(i);
 
         TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
         // Can also use Twitter directly: Twitter.getApiClient()
         StatusesService statusesService = twitterApiClient.getStatusesService();
 
 
-        statusesService.userTimeline(null,"SenatorBoxer", 1, null, null,
+        statusesService.userTimeline(null, current.twitterName , 1, null, null,
                 null, null,null,null,new Callback<List<Tweet>>() {
             @Override
             public void success(Result<List<Tweet>> result) {
 
-                Log.d("result", String.valueOf(result));
-                
+                Log.d("result", String.valueOf(result.data));
+                List<Tweet> tweets = new ArrayList<Tweet>();
+                tweets = (List<Tweet>) result.data;
+                for (Tweet tweet : tweets) {
+                    current.tweet = tweet.text;
+                    current.image_url = tweet.user.profileImageUrl;
+                }
+
+                int copy = i;
+                getLatestTweet(copy + 1);
+
                 //Do something with result, which provides a Tweet inside of result.data
             }
 
