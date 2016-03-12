@@ -29,6 +29,8 @@ public class CongressionalActivity extends AppCompatActivity implements OnItemCl
     private String[] emails;
     private String[] websites;
 
+    private int moveToDetailIndex = -1;
+
     private ArrayList<Congressmen> congressmen = new ArrayList<Congressmen>();
 
     Congressmen selected;
@@ -50,6 +52,22 @@ public class CongressionalActivity extends AppCompatActivity implements OnItemCl
 
         Intent getCongressmen = getIntent();
 //        zipcode = getZipcode.getStringExtra("zip");
+
+        Log.d("congressmen", String.valueOf(congressmen.size()));
+
+
+        Log.d("create", "creating the congressional view");
+
+
+        if (getCongressmen.getIntExtra("selectedIndex", -1) != -1) {
+
+
+            moveToDetailIndex = getCongressmen.getIntExtra("selectedIndex", -1);
+
+            Log.d("somehow", "somehow got here");
+
+        }
+
         congressmen = (ArrayList<Congressmen>) getCongressmen.getSerializableExtra("congressmen");
 
 
@@ -71,6 +89,20 @@ public class CongressionalActivity extends AppCompatActivity implements OnItemCl
         }
 
         congressList.setOnItemClickListener(this);
+
+        //Here move to detail view when need be
+
+        if (moveToDetailIndex >= 0) {
+
+            selected = congressmen.get(moveToDetailIndex);
+            //  selected = new Congressmen(names[index], parties[index], emails[index], websites[index], tweets[index], img_resource[index]);
+
+            Log.d("name", selected.name);
+            Intent i = new Intent(CongressionalActivity.this, DetailActivity.class);
+            i.putExtra("selected_congressmen", (Serializable) selected);
+            startActivity(i);
+
+        }
 
 
 //        congressList.setOnItemClickListener(new OnItemClickListener() {

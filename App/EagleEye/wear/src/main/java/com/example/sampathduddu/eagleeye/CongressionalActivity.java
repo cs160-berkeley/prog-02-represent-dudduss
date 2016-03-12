@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import com.example.sampathduddu.eagleeye.ShakeDetector.OnShakeListener;
 
+import java.util.Random;
+
 
 /**
  * Created by sampathduddu on 3/1/16.
@@ -31,11 +33,16 @@ public class CongressionalActivity extends WearableActivity {
     private String[] names;
     private int[] img_resource;
     private String[] parties;
+    private String[] endDates;
+    private String[] bioIds;
 
     private String city;
     private String state;
     private double obamaPercentage;
     private double romneyPercentage;
+    private double selectedLat;
+    private double selectedLon;
+
 
 
     private WearableListView listView;
@@ -59,6 +66,9 @@ public class CongressionalActivity extends WearableActivity {
 
         names = info.getStringArrayExtra("names");
         parties = info.getStringArrayExtra("parties");
+        endDates = info.getStringArrayExtra("endDates");
+        bioIds = info.getStringArrayExtra("bioIDs");
+
         city = info.getStringExtra("city");
         state = info.getStringExtra("state");
 
@@ -67,6 +77,9 @@ public class CongressionalActivity extends WearableActivity {
 
         obamaPercentage = info.getDoubleExtra("obama", 50);
         romneyPercentage = info.getDoubleExtra("romney", 49);
+
+        selectedLat = info.getDoubleExtra("lat", 0);
+        selectedLon = info.getDoubleExtra("lon", 0);
 
         Log.d("obamaFromPhone", String.valueOf(obamaPercentage));
         Log.d("romneyFromPhone", String.valueOf(romneyPercentage));
@@ -102,12 +115,35 @@ public class CongressionalActivity extends WearableActivity {
 
     public void handleShakeEvent(int count) {
 
-        if (!zipcode.equals("98502") && !zipcode.equals("94720")) {
-            zipcode = "98502";
+        //Testing Random
+        Random r = new Random();
+
+        double lon = 83 + (121-83) * r.nextDouble();
+        double lat;
+
+        if (lon > 95) {
+
+            lat = 35 + (48-35) * r.nextDouble();
+
+
         } else {
-            zipcode = "35766";
+
+            lat = 30 + (40-30) * r.nextDouble();
         }
-        setData();
+
+        lon = lon*-1.0;
+
+
+//        Random r = new Random();
+//        double randomValue = rangeMin + (rangeMax - rangeMin) * r.nextDouble();
+//
+//
+//        if (!zipcode.equals("98502") && !zipcode.equals("94720")) {
+//            zipcode = "98502";
+//        } else {
+//            zipcode = "35766";
+//        }
+//        setData();
 
     }
 
@@ -258,12 +294,20 @@ public class CongressionalActivity extends WearableActivity {
 
         Intent sendIntent = new Intent(CongressionalActivity.this, WatchToPhoneService.class);
 
-        TextView name = (TextView) findViewById(R.id.name);
-        String congress_name = name.getText().toString();
+        int selectedIndex = index;
 
-        Log.d("name", congress_name);
+        String selectedID = bioIds[selectedIndex];
+//
+//        TextView name = (TextView) findViewById(R.id.name);
+//        String congress_name = name.getText().toString();
 
-        sendIntent.putExtra("name",congress_name);
+
+
+       // Log.d("name", congress_name);
+
+        String latLonString = String.valueOf(selectedLat) + " " + String.valueOf(selectedLon) + " " + String.valueOf(selectedIndex);
+
+        sendIntent.putExtra("latlon",latLonString);
         startService(sendIntent);
 //        ImageView img = (ImageView) findViewById(R.id.congressImage);
 //        img.setImageResource(R.drawable.murray);

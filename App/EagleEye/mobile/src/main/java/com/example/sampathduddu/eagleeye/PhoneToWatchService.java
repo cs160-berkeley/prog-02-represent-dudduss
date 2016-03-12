@@ -38,6 +38,9 @@ public class PhoneToWatchService extends Service implements GoogleApiClient.Conn
     private double obamaPercentage;
     private double romneyPercentage;
 
+    private double selectedLat;
+    private double selectedLon;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -76,6 +79,9 @@ public class PhoneToWatchService extends Service implements GoogleApiClient.Conn
         obamaPercentage = (Double) extras.get("obama");
         romneyPercentage = (Double) extras.get("romney");
 
+        selectedLat = (Double) extras.get("lat");
+        selectedLon = (Double) extras.get("lon");
+
         // Send the message with the cat name
         new Thread(new Runnable() {
             @Override
@@ -96,6 +102,8 @@ public class PhoneToWatchService extends Service implements GoogleApiClient.Conn
 
         ArrayList<String> names = new ArrayList<String>();
         ArrayList<String> parties = new ArrayList<String>();
+        ArrayList<String> endDates = new ArrayList<String>();
+        ArrayList<String> bioIDs = new ArrayList<String>();
 
         // Create a DataMap object and send it to the data layer
         DataMap dataMap = new DataMap();
@@ -103,6 +111,8 @@ public class PhoneToWatchService extends Service implements GoogleApiClient.Conn
         for (Congressmen cg: congressmen) {
             names.add(cg.name);
             parties.add(cg.party);
+            endDates.add(cg.endDate);
+            bioIDs.add(cg.bio_id);
         }
 
         String[] names1 = new String[names.size()];
@@ -111,13 +121,26 @@ public class PhoneToWatchService extends Service implements GoogleApiClient.Conn
         String[] parties1 = new String[parties.size()];
         parties1 = parties.toArray(parties1);
 
+        String[] endDates1 = new String[endDates.size()];
+        endDates1 = endDates.toArray(endDates1);
+
+        String[] bioIDs1 = new String[bioIDs.size()];
+        bioIDs1 = bioIDs.toArray(bioIDs1);
+
         dataMap.putStringArray("names", names1);
         dataMap.putStringArray("parties", parties1);
+        dataMap.putStringArray("endDates", endDates1);
+        dataMap.putStringArray("bioIDs", bioIDs1);
+
         dataMap.putString("city", selectedCity);
         dataMap.putString("state", selectedState);
         dataMap.putDouble("obama", obamaPercentage);
         dataMap.putDouble("romney", romneyPercentage);
+        dataMap.putDouble("lat", selectedLat);
+        dataMap.putDouble("lon", selectedLon);
+
         dataMap.putLong("time", new Date().getTime());
+
 
         Log.d("obamaPhone", String.valueOf(obamaPercentage));
         Log.d("romneyPhone", String.valueOf(romneyPercentage));

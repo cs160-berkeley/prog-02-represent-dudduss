@@ -65,6 +65,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private double currLatitude;
     private double currLongitude;
 
+    private double selectedLat;
+    private double selectedLon;
+
     private String selectedCity;
     private String selectedCounty;
     private String selectedState;
@@ -82,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
 //        authenticate();
 
+
         //Seting layout basics
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -98,6 +102,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                         .setAction("Action", null).show();
             }
         });
+
+
+
 
         final EditText zipcode = (EditText) findViewById(R.id.zipcode);
 
@@ -222,6 +229,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         if (inputType.equals("latlon")) {
 
+            selectedLat = lat;
+            selectedLon = lon;
             geocoderURL += "latlng=" + String.valueOf(lat) + "," +  String.valueOf(lon);
 
         } else {
@@ -543,6 +552,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         sendIntent.putExtra("romney", romneyPercentage);
         sendIntent.putExtra("state", selectedState);
         sendIntent.putExtra("city", selectedCity);
+        sendIntent.putExtra("lat", selectedLat);
+        sendIntent.putExtra("lon", selectedLon);
+
         sendIntent.putExtra("zip", "94720");
         startService(sendIntent);
 

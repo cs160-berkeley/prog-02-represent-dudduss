@@ -17,10 +17,15 @@ public class WatchListenerService extends WearableListenerService {
 
     private String[] names;
     private String[] parties;
+    private String[] endDates;
+    private String[] bioIds;
     private String city;
     private String state;
     private double obama;
     private double romney;
+
+    private double selectedLat;
+    private double selectedLon;
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
@@ -62,12 +67,16 @@ public class WatchListenerService extends WearableListenerService {
 
                 names = dataMap.getStringArray("names");
                 parties = dataMap.getStringArray("parties");
+                endDates = dataMap.getStringArray("endDates");
+                bioIds = dataMap.getStringArray("bioIDs");
+
                 city = dataMap.getString("city");
                 state = dataMap.get("state");
                 obama = dataMap.getDouble("obama");
                 romney = dataMap.getDouble("romney");
+                selectedLat = dataMap.getDouble("lat");
+                selectedLon = dataMap.getDouble("lon");
                 Log.d("romney", String.valueOf(romney));
-
 
             }
         }
@@ -79,10 +88,14 @@ public class WatchListenerService extends WearableListenerService {
 
         intent.putExtra("names", names);
         intent.putExtra("parties", parties);
+        intent.putExtra("endDates", endDates);
+        intent.putExtra("bioIDs", bioIds);
         intent.putExtra("city", city);
         intent.putExtra("state", state);
         intent.putExtra("obama", obama);
         intent.putExtra("romney", romney);
+        intent.putExtra("lat", selectedLat);
+        intent.putExtra("lon", selectedLon);
         startActivity(intent);
 
         Log.d("myTag", "got here 4");
