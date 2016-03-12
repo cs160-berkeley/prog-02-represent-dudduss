@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
@@ -504,17 +505,27 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                 break;
                             }
 
-                            JsonElement elem = array.get(i).getAsJsonObject().get("short_title");
+                            JsonElement billTitle = array.get(i).getAsJsonObject().get("short_title");
 
-                            if (!elem.toString().equals("null")) {
-                                String bill = elem.toString();
 
+                            if (!billTitle.toString().equals("null")) {
+                                String bill = billTitle.toString();
+
+                                String introducedOn = array.get(i).getAsJsonObject().get("introduced_on").toString();
+                                introducedOn = introducedOn.replaceAll("\"", "");
                                 bill = bill.replaceAll("\"", "");
 
                                 if (bill.toCharArray().length > 40) {
                                     bill.substring(0, 40);
                                     bill += "...";
+
                                 }
+
+                                bill += "\n";
+
+                                bill += " Introduced " + dateDisplay(introducedOn);
+
+                                bill += "\n";
 
                                 congressmen.get(index).bills.add(bill);
                             }
@@ -665,6 +676,30 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         return super.onOptionsItemSelected(item);
     }
 
+
+    public String dateDisplay(String date) {
+
+        String year = date.substring(0,4);
+
+        HashMap<String, String> months = new HashMap<String, String>();
+        months.put("01", "January");
+        months.put("02", "February");
+        months.put("03", "March");
+        months.put("04", "April");
+        months.put("05", "May");
+        months.put("06", "June");
+        months.put("07", "July");
+        months.put("08", "August");
+        months.put("09", "September");
+        months.put("10", "October");
+        months.put("11", "November");
+        months.put("12", "December");
+
+        String day = date.substring(8,10);
+
+        return months.get(date.substring(5,7)) + " " + day + ", " + year;
+
+    }
 
     @Override
     public void onProviderDisabled(String provider) {

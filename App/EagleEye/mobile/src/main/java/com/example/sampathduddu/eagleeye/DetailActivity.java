@@ -129,12 +129,9 @@ public class DetailActivity extends AppCompatActivity {
         months.put("11", "November");
         months.put("12", "December");
 
-        return months.get(date.substring(5,7)) + " " + year;
+        String day = date.substring(8,10);
 
-
-
-
-
+        return months.get(date.substring(5,7)) + " " + day + ", " + year;
     }
 
     @Override

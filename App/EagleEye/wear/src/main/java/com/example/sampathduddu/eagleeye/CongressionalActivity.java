@@ -11,7 +11,6 @@ import android.support.wearable.view.WearableListView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sampathduddu.eagleeye.ShakeDetector.OnShakeListener;
@@ -115,6 +114,12 @@ public class CongressionalActivity extends WearableActivity {
 
     public void handleShakeEvent(int count) {
 
+        if (count > 1) {
+            return;
+        }
+
+        Log.d("count", String.valueOf(count));
+
         //Testing Random
         Random r = new Random();
 
@@ -133,6 +138,8 @@ public class CongressionalActivity extends WearableActivity {
 
         lon = lon*-1.0;
 
+        selectedLat = lat;
+        selectedLon = lon;
 
 //        Random r = new Random();
 //        double randomValue = rangeMin + (rangeMax - rangeMin) * r.nextDouble();
@@ -144,6 +151,8 @@ public class CongressionalActivity extends WearableActivity {
 //            zipcode = "35766";
 //        }
 //        setData();
+
+        goToMobile(true);
 
     }
 
@@ -192,8 +201,8 @@ public class CongressionalActivity extends WearableActivity {
 //        img_resource = new int[]{R.drawable.heckdenny, R.drawable.murray, R.drawable.cantwell};
 //        parties = new String[]{"Democrat", "Democrat", "Democrat"};
 
-        ImageView img = (ImageView) findViewById(R.id.congressImage);
-        img.setImageResource(img_resource[index]);
+//        ImageView img = (ImageView) findViewById(R.id.congressImage);
+//        img.setImageResource(img_resource[index]);
 
         TextView name = (TextView) findViewById(R.id.name);
         name.setText(names[index]);
@@ -222,11 +231,11 @@ public class CongressionalActivity extends WearableActivity {
 
         Button next = (Button) findViewById(R.id.next);
 
-        if (index == 2) {
+        if (index == names.length-1) {
             next.setText("Vote");
         }
 
-        if (index == 3) {
+        if (index == names.length) {
             Intent toVote = new Intent(CongressionalActivity.this, VoteActivity.class);
 
             toVote.putExtra("city", city);
@@ -255,7 +264,7 @@ public class CongressionalActivity extends WearableActivity {
 //            }
 
             startActivity(toVote);
-            index = 2;
+            index = names.length-1;
             return;
         }
 
@@ -290,27 +299,38 @@ public class CongressionalActivity extends WearableActivity {
 
     public void readClicked(View v)
     {
+
+        goToMobile(false);
+
+//        ImageView img = (ImageView) findViewById(R.id.congressImage);
+//        img.setImageResource(R.drawable.murray);
+    }
+
+    public void goToMobile(boolean random) {
+
         Log.d("READ", "read recognized");
 
         Intent sendIntent = new Intent(CongressionalActivity.this, WatchToPhoneService.class);
 
-        int selectedIndex = index;
 
-        String selectedID = bioIds[selectedIndex];
-//
-//        TextView name = (TextView) findViewById(R.id.name);
-//        String congress_name = name.getText().toString();
+        if (random) {
+
+            String latLonString = String.valueOf(selectedLat) + " " + String.valueOf(selectedLon) + " " + String.valueOf(-1);
+            sendIntent.putExtra("latlon",latLonString);
+            startService(sendIntent);
+
+        } else {
+
+            String latLonString = String.valueOf(selectedLat) + " " + String.valueOf(selectedLon) + " " + String.valueOf(index);
+            sendIntent.putExtra("latlon",latLonString);
+//            sendIntent.putExtra("random", random);
+            startService(sendIntent);
+
+        }
 
 
 
-       // Log.d("name", congress_name);
 
-        String latLonString = String.valueOf(selectedLat) + " " + String.valueOf(selectedLon) + " " + String.valueOf(selectedIndex);
-
-        sendIntent.putExtra("latlon",latLonString);
-        startService(sendIntent);
-//        ImageView img = (ImageView) findViewById(R.id.congressImage);
-//        img.setImageResource(R.drawable.murray);
     }
 
 

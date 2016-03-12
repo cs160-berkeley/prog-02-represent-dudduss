@@ -10,13 +10,13 @@
 
 
 
-    <ImageView
-        android:layout_width="80dp"
-        android:layout_height="90dp"
-        android:paddingTop="20dp"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/congressImage"
-        android:src="@drawable/heckdenny"/>
+    <!--<ImageView-->
+        <!--android:layout_width="80dp"-->
+        <!--android:layout_height="90dp"-->
+        <!--android:paddingTop="20dp"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:id="@+id/congressImage"-->
+        <!--android:src="@drawable/heckdenny"/>-->
 
     <!--<ImageView-->
         <!--android:layout_width="50dp"-->
@@ -42,7 +42,7 @@
         android:layout_width="100dp"
         android:layout_height="40dp"
         android:text="Read More"
-        android:layout_marginTop="130dp"
+        android:layout_marginTop="110dp"
         android:layout_marginLeft="60dp"
         android:textSize="11sp"
         android:id="@+id/read"
@@ -62,10 +62,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/congressImage"
         android:layout_centerHorizontal="true"
+        android:paddingTop="50dp"
         android:text="Denny Heck"
-        android:textSize="15sp"
+        android:textSize="22sp"
         android:textColor="@color/black"
         android:id="@+id/name"/>
 
@@ -75,7 +75,7 @@
         android:layout_below="@id/name"
         android:layout_centerHorizontal="true"
         android:text="Democrat"
-        android:textSize="12sp"
+        android:textSize="18sp"
         android:textColor="#0c7ff3"
         android:id="@+id/party"/>
 

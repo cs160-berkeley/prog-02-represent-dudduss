@@ -27,8 +27,10 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class PhoneListenerService extends WearableListenerService {
@@ -296,17 +298,27 @@ public class PhoneListenerService extends WearableListenerService {
                                 break;
                             }
 
-                            JsonElement elem = array.get(i).getAsJsonObject().get("short_title");
+                            JsonElement billTitle = array.get(i).getAsJsonObject().get("short_title");
 
-                            if (!elem.toString().equals("null")) {
-                                String bill = elem.toString();
 
+                            if (!billTitle.toString().equals("null")) {
+                                String bill = billTitle.toString();
+
+                                String introducedOn = array.get(i).getAsJsonObject().get("introduced_on").toString();
+                                introducedOn = introducedOn.replaceAll("\"", "");
                                 bill = bill.replaceAll("\"", "");
 
                                 if (bill.toCharArray().length > 40) {
                                     bill.substring(0, 40);
                                     bill += "...";
+
                                 }
+
+                                bill += "\n";
+
+                                bill += " Introduced " + dateDisplay(introducedOn);
+
+                                bill += "\n";
 
                                 congressmen.get(index).bills.add(bill);
                             }
@@ -332,35 +344,50 @@ public class PhoneListenerService extends WearableListenerService {
 
         setVotingData();
 
-//        //In Phone
+//        //Othewise reload the Congressional View
 //        Intent i = new Intent(PhoneListenerService.this, CongressionalActivity.class);
 //        i.putExtra("congressmen", (Serializable) congressmen);
 //        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //        i.putExtra("selectedIndex", selectedIndex);
 
-        //In Phone
-        Intent i = new Intent(PhoneListenerService.this, DetailActivity.class);
-        i.putExtra("selected_congressmen", congressmen.get(selectedIndex));
-        //i.putExtra("congressmen", (Serializable) congressmen);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (selectedIndex < 0) {
+
+            Intent i = new Intent(PhoneListenerService.this, CongressionalActivity.class);
+            i.putExtra("congressmen", (Serializable) congressmen);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            startActivity(i);
+
+            //In watch
+            Intent sendIntent = new Intent(PhoneListenerService.this, PhoneToWatchService.class);
+            sendIntent.putExtra("congressmen", congressmen);
+            sendIntent.putExtra("obama", obamaPercentage);
+            sendIntent.putExtra("romney", romneyPercentage);
+            sendIntent.putExtra("state", selectedState);
+            sendIntent.putExtra("city", selectedCity);
+            sendIntent.putExtra("lat", selectedLat);
+            sendIntent.putExtra("lon", selectedLon);
+            startService(sendIntent);
+
+
+
+        } else {
+
+            //Just go to Detail View
+            Intent i = new Intent(PhoneListenerService.this, DetailActivity.class);
+            i.putExtra("selected_congressmen", congressmen.get(selectedIndex));
+            //i.putExtra("congressmen", (Serializable) congressmen);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //        i.putExtra("selectedIndex", selectedIndex);
 
+            startActivity(i);
 
-        startActivity(i);
+        }
 
-        //In watch
-//        Intent sendIntent = new Intent(PhoneListenerService.this, PhoneToWatchService.class);
-//        sendIntent.putExtra("congressmen", congressmen);
-//        sendIntent.putExtra("obama", obamaPercentage);
-//        sendIntent.putExtra("romney", romneyPercentage);
-//        sendIntent.putExtra("state", selectedState);
-//        sendIntent.putExtra("city", selectedCity);
-//        sendIntent.putExtra("lat", selectedLat);
-//        sendIntent.putExtra("lon", selectedLon);
-//
-//
-//        sendIntent.putExtra("zip", "94720");
-//        startService(sendIntent);
+
+
+
+
 
 
     }
@@ -445,6 +472,29 @@ public class PhoneListenerService extends WearableListenerService {
                     }
                 });
 
+    }
+
+    public String dateDisplay(String date) {
+
+        String year = date.substring(0,4);
+
+        HashMap<String, String> months = new HashMap<String, String>();
+        months.put("01", "January");
+        months.put("02", "February");
+        months.put("03", "March");
+        months.put("04", "April");
+        months.put("05", "May");
+        months.put("06", "June");
+        months.put("07", "July");
+        months.put("08", "August");
+        months.put("09", "September");
+        months.put("10", "October");
+        months.put("11", "November");
+        months.put("12", "December");
+
+        String day = date.substring(8, 10);
+
+        return months.get(date.substring(5,7)) + " " + day + ", " + year;
     }
 
 
