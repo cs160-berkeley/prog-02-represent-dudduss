@@ -8,7 +8,7 @@ Sampath Duddu ([duddus@berkeley.edu](mailto:duddus@berkeley.edu))
 
 ## Demo Video
 
-See [Eagle Eye Demo] (https://youtu.be/QGOfx2k5Q-c)
+See [Eagle Eye Demo] (https://youtu.be/55i7R3KH6-U)
 
 ## Screenshots
 
