@@ -9,7 +9,6 @@
     tools:context=".CongressmenActivity" tools:deviceIds="wear_round" >
 
 
-
     <!--<ImageView-->
         <!--android:layout_width="80dp"-->
         <!--android:layout_height="90dp"-->
@@ -78,7 +77,6 @@
         android:textSize="18sp"
         android:textColor="#0c7ff3"
         android:id="@+id/party"/>
-
 
 
 </RelativeLayout>

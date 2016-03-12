@@ -283,6 +283,10 @@ public class CongressionalActivity extends WearableActivity {
         Button next = (Button) findViewById(R.id.next);
         next.setEnabled(true);
 
+        if (index <= names.length-1) {
+            next.setText("Next");
+        }
+
         if (index == 0) {
             Button prev = (Button) findViewById(R.id.prev);
             prev.setEnabled(false);

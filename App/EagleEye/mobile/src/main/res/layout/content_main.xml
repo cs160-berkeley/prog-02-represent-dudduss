@@ -61,7 +61,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="GET LOCATION"
+        android:text="USE CURRENT LOCATION"
         android:layout_below="@+id/textView2"
         android:layout_centerHorizontal="true"
         android:textColor="#FFFFFF"

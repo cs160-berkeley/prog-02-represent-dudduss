@@ -224,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
-    public void setLocaleDetails(String inputType, String zipcode, final double lat, final double lon) {
+    public void setLocaleDetails(String inputType, final String zipcode, final double lat, final double lon) {
 
         String geocoderURL = "http://maps.googleapis.com/maps/api/geocode/json?&";
 
@@ -273,6 +273,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                 selectedCounty = selectedCounty.replaceAll("\"", "");
 
                             }
+                        }
+
+                        if (zipcode.length() > 3) {
+                            getRepresentativesZipcode(zipcode);
+                            return;
                         }
 
                         getRepresentativesCoordinates(lat, lon);
