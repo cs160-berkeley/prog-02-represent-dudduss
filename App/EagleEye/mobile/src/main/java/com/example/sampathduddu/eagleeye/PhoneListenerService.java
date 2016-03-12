@@ -27,7 +27,6 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -333,11 +332,18 @@ public class PhoneListenerService extends WearableListenerService {
 
         setVotingData();
 
+//        //In Phone
+//        Intent i = new Intent(PhoneListenerService.this, CongressionalActivity.class);
+//        i.putExtra("congressmen", (Serializable) congressmen);
+//        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        i.putExtra("selectedIndex", selectedIndex);
+
         //In Phone
-        Intent i = new Intent(PhoneListenerService.this, CongressionalActivity.class);
-        i.putExtra("congressmen", (Serializable) congressmen);
+        Intent i = new Intent(PhoneListenerService.this, DetailActivity.class);
+        i.putExtra("selected_congressmen", congressmen.get(selectedIndex));
+        //i.putExtra("congressmen", (Serializable) congressmen);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        i.putExtra("selectedIndex", selectedIndex);
+//        i.putExtra("selectedIndex", selectedIndex);
 
 
         startActivity(i);
